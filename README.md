@@ -22,6 +22,8 @@
   </a>
 </p>
 
+If you've already tried using react-router-dom with Electron, had difficulties getting it to work both in development and in production and in different windows, this library is for you!
+
 # Features
 - 🚀 Ready for Development and Production environments
 - 🔥 Works on Multiple windows
