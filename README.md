@@ -238,6 +238,13 @@ Example:
 ### Route
 It's the [react-router-dom](https://reactrouter.com/en/main/route/route#type-declaration) `<Route />` component, same props, same usage. 😄
 
+### In-depth example
+The recommended way to go to handle window states between main and renderer process (like creating or closing a new window) is using [IPC](https://www.electronjs.org/docs/latest/tutorial/ipc). You can check the [electron-app](https://github.com/daltonmenezes/electron-app) boilerplate to see how it was achieved, like:
+
+- [A preload script requesting window creation using IPC](https://github.com/daltonmenezes/electron-app/blob/main/src/preload/ipcs/windows/about/create.ts)
+- [A window creation on main process using IPC](https://github.com/daltonmenezes/electron-app/blob/main/src/main/windows/About/ipcs/register-window-creation.ts)
+- [The Routing doc from electron-app boilerplate](https://github.com/daltonmenezes/electron-app/blob/main/docs/ROUTING.md)
+
 # Contributing
 > **Note**: contributions are always welcome, but always **ask first**, — please — before work on a PR.
 
