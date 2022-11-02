@@ -1,6 +1,6 @@
 {
   "name": "electron-router-dom",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
@@ -50,9 +50,9 @@
     "typescript": "^4.8.3"
   },
   "peerDependencies": {
-    "electron": "^20.1.4",
-    "react": "^18.2.0",
-    "react-router-dom": "^6.4.0"
+    "electron": ">=20.0",
+    "react": ">=18.0",
+    "react-router-dom": ">=6.0"
   },
   "keywords": [
     "electron",
