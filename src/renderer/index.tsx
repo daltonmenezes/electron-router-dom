@@ -5,7 +5,7 @@ import { toLowerCaseKeys } from '../shared'
 export { Route } from 'react-router-dom'
 
 export interface RouterProps {
-  [windowID: string]: JSX.Element
+  [windowID: string]: any
 }
 
 export function Router(routes: RouterProps) {
@@ -16,13 +16,9 @@ export function Router(routes: RouterProps) {
 
   const transformedRoutes = toLowerCaseKeys(routes)
 
-  const Route = () => transformedRoutes[windowID]
-
-  if (!Route) return null
-
   return (
     <HashRouter basename={windowID}>
-      <Routes>{Route()}</Routes>
+      <Routes>{transformedRoutes[windowID]}</Routes>
     </HashRouter>
   )
 }
