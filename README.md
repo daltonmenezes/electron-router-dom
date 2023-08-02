@@ -72,7 +72,8 @@ function createWindow(id: string, options: WindowOptions = {}) {
     ...options,
   })
 
-  const devServerURL = createURLRoute(process.env['ELECTRON_RENDERER_URL']!, id)
+  // Don't forget to check if the port is the same as your dev server
+  const devServerURL = createURLRoute('http://localhost:3000', id)
 
   const fileRoute = createFileRoute(
     join(__dirname, '../renderer/index.html'),
@@ -200,9 +201,10 @@ mainWindow.loadFile(
 
 Example:
 ```ts
+// Don't forget to check if the port is the same as your dev server
 mainWindow.loadURL(
   createURLRoute(
-    'http://localhost:3333',
+    'http://localhost:3000',
     'main'
   )
 )
