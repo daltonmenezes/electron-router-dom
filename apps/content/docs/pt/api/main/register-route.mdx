@@ -1,0 +1,145 @@
+---
+title: registerRoute
+description: Registra uma janela como uma rota da aplicação.
+---
+
+O método `registerRoute` retornado pela função <Link href="/docs/api/create-electron-router">createElectronRouter</Link> registra uma janela como uma rota da aplicação.
+Isso significa que somente o conteúdo definido a partir da rota correspondente no processo renderizador (`renderer process`) para essa janela será exibido nela.
+
+## Exemplo básico
+
+```ts
+  registerRoute({
+    id: 'main',
+    browserWindow: mainWindow,
+    htmlFile: path.join(__dirname, '../renderer/index.html'),
+  })
+```
+
+## Referência da API
+
+ <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Propriedade</TableHead>
+      <TableHead>Tipo</TableHead>
+      <TableHead>Padrão</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <div className="inline-flex gap-2">
+          `id`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              O id que representará a sua janela/rota, pense nele como o `basename` de uma rota.
+
+              Se `types.strict` definido na função `createElectronRouter` for `true` (o padrão é `true`),
+              então você precisará usar um dos ids definidos lá, caso tenha explicitamente definido o `types.strict` como `false`,
+              qualquer string será permitida.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`string`</TableCell>
+      <TableCell>`main`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `query?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              As `query strings` no formato de objeto que serão passadas para a janela e usadas pelo objeto global `window.URLSearchParams` ou pelo hook `useSearchParams` do pacote `react-router-dom`.
+
+              Caso tenha definido `types.queryKeys` e o `types.strict` estiver `true` (o padrão é `true`) na função `createElectronRouter`, então você precisará usar um dos query keys definidos lá como propriedade desse objeto, caso tenha explicitamente definido o `types.strict` como `false`, qualquer propriedade será permitida.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`object`</TableCell>
+      <TableCell />
+    </TableRow>
+
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `port?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              A porta onde o servidor de desenvolvimento `React` está rodando.
+
+              Se a porta foi definida na função `createElectronRouter`, então você não precisa definir essa propriedade,
+              caso defina, ela será usada em vez da porta definida na função `createElectronRouter`.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`number`</TableCell>
+      <TableCell>A porta definida na função `createElectronRouter` ou `3000`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `htmlFile`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent>
+              O caminho para o arquivo HTML que será exibido na janela.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`string`</TableCell>
+      <TableCell />
+    </TableRow>
+
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `browserWindow`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent>
+              A instância da janela que será exibida.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`Electron.BrowserWindow`</TableCell>
+      <TableCell />
+    </TableRow>
+  </TableBody>
+</Table>

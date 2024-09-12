@@ -1,0 +1,22 @@
+---
+title: settings
+description: As configurações do roteador.
+---
+
+O objeto `settings` retornado pela função <Link href="/docs/api/create-electron-router">createElectronRouter</Link> possui a mesma estrutura e valores utilizados nela.
+
+> Você pode usar o objeto `settings` para reaproveitar as configurações em outros locais da aplicação ou como tipagem usando `typeof settings` no `TypeScript`.
+
+## Tipos
+
+```ts
+  {
+    port: number // padrão: 3000
+
+    types: {
+      strict: boolean // padrão: true
+      ids: string[]
+      queryKeys: string[]
+    }
+  }
+```

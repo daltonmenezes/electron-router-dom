@@ -1,0 +1,26 @@
+appId: com.daltonmenezes.electronrouterdom
+productName: Electron Router DOM with query string example
+electronVersion: 21.2.3
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+asarUnpack:
+  - '**/*.{node,dll}'
+win:
+  executableName: electron-router-dom-basic-example
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - dir
+linux:
+  target:
+    - deb
+  maintainer: daltonmenezes.com
+  synopsis: ${description}
+  category: Utility
+npmRebuild: false

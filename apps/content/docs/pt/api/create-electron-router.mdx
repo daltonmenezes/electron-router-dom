@@ -1,0 +1,221 @@
+---
+title: createElectronRouter
+description: Cria um roteador para a sua aplicação Electron
+---
+
+A função `createElectronRouter` cria um roteador para a sua aplicação Electron.
+A partir dela, você poderá conectar os processos principal (`main process`) e renderizador (`renderer process`), permitindo a integração entre eles.
+
+## Exemplo básico
+
+```ts
+import { createElectronRouter } from 'electron-router-dom'
+
+export const { Router, registerRoute } = createElectronRouter({
+  port: 4927,
+
+  types: {
+    ids: ['main', 'about'],
+    queryKeys: ['id', 'name'],
+  },
+})
+```
+
+## Referência da API
+
+ <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Propriedade</TableHead>
+      <TableHead>Tipo</TableHead>
+      <TableHead>Padrão</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `port?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              A porta onde o servidor de desenvolvimento `React` está rodando.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`number`</TableCell>
+      <TableCell>`3000`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <div className="inline-flex gap-2">
+          `types?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              As definições de tipos permitidos para as rotas.
+              Esse tipos são usados para garantir o contrato definido e facilitar a sugestão desse tipos pelo seu editor de código.
+
+              #### Exemplo
+              ```ts
+              {
+                strict: true,
+                ids: ['main', 'about'],
+                queryKeys: ['id', 'name'],
+              }
+              ```
+
+              #### Tipos
+              ```ts
+              {
+                strict?: boolean
+                ids?: Array<string>
+                queryKeys?: Array<string>
+              }
+              ```
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`object`</TableCell>
+      <TableCell />
+    </TableRow>
+  </TableBody>
+</Table>
+
+### `types`
+
+ <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Propriedade</TableHead>
+      <TableHead>Tipo</TableHead>
+      <TableHead>Padrão</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `strict?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              Se `true`, então você precisará usar um dos ids definidos em `types.ids` e uma das chaves `types.queryKeys` na utilização do método `registerRoute` e do componente `Route`,
+              caso contrário, qualquer `string`/`propriedade` será permitida.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`boolean`</TableCell>
+      <TableCell>`true`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <div className="inline-flex gap-2">
+          `ids?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              Os ids que representarão as suas janelas/rotas, pense neles como o `basename` de uma rota.
+
+              Se `types.strict` definido na função `createElectronRouter` for `true` (o padrão é `true`),
+              então você precisará usar um dos ids definidos, caso tenha explicitamente definido o `types.strict` como `false`,
+              qualquer string será permitida.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`Array<string>`</TableCell>
+      <TableCell />
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <div className="inline-flex gap-2">
+          `queryKeys?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              As chaves das `query strings` que serão passadas para a janela e usadas pelo objeto global `window.URLSearchParams` ou pelo hook `useSearchParams` do pacote `react-router-dom`.
+
+              Se `types.strict` definido na função `createElectronRouter` for `true` (o padrão é `true`),
+              então você precisará usar um dos query keys definidos, caso tenha explicitamente definido o `types.strict` como `false`,
+              qualquer `string/propriedade` será permitida.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`Array<string>`</TableCell>
+      <TableCell />
+    </TableRow>
+  </TableBody>
+</Table>
+
+
+## Retorno
+
+ <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Propriedade</TableHead>
+      <TableHead>Tipo</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    <TableRow>
+      <TableCell>
+        <Link href="/docs/api/renderer/router">Router</Link>
+      </TableCell>
+
+      <TableCell>`React Component`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <Link href="/docs/api/main/register-route">registerRoute</Link>
+      </TableCell>
+
+      <TableCell>`function`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <Link href="/docs/api/settings">settings</Link>
+      </TableCell>
+
+      <TableCell>`object`</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>

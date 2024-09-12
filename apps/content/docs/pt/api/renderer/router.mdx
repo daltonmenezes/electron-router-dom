@@ -1,0 +1,101 @@
+---
+title: Router
+description: Gerencia as rotas da aplicação no processo renderizador.
+---
+
+O componente `Router` retornado pela função <Link href="/docs/api/create-electron-router">createElectronRouter</Link> é responsável por gerenciar as rotas a partir das janelas correspondentes no processo de renderização.
+
+Internamente, ele usa o `RouterProvider` e a função `createHashRouter` do pacote `react-router-dom` e aplica a lógica necessária para que as janelas correspondentes sejam exibidas corretamente.
+
+## Exemplo básico
+
+```tsx
+  <Router
+    main={
+      <Route path="/" element={<Layout />} errorElement={<ErrorScreen />}>
+        <Route
+          path="/"
+          element={<MainScreen />}
+        />
+
+        <Route path="/about" element={<AboutScreen />} />
+      </Route>
+    }
+  />
+```
+
+## Referência da API
+
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Propriedade</TableHead>
+      <TableHead>Tipo</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <div className="inline-flex gap-2">
+          `[id]`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              O id correspondente ao que foi definido para a sua janela no processo principal (`main process`), pense nele como o `basename` de uma rota.
+
+              Se `types.strict` definido na função `createElectronRouter` for `true` (o padrão é `true`),
+              então você precisará usar um dos ids definidos lá, caso tenha explicitamente definido o `types.strict` como `false`,
+              qualquer string será permitida.
+
+              ```tsx
+                <Router
+                  main={
+                    <Route path="/" element={<MainScreen />} />
+                  }
+                  about={
+                    <Route path="/" element={<AboutScreen />} />
+                  }
+                />
+              ```
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>
+        <Link href="https://reactrouter.com/en/6.26.2/route/route#type-declaration">Route</Link>
+      </TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `_providerProps?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              Sobrepõe as propriedades internas do `RouterProvider` do pacote `react-router-dom` usado pelo `Electron Router DOM`.
+
+              ```tsx
+                _providerProps={{
+                  fallbackElement: <h1>Loading...</h1>,
+                }}
+              ```
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`object`</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>

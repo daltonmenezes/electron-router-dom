@@ -1,0 +1,104 @@
+---
+title: Migrating from v1 to v2
+description: Learn how to migrate from Electron Router DOM v1 to v2
+---
+
+<Steps>
+  <Step>Updating dependencies</Step>
+
+  ```shell
+  npm i react-router-dom@latest electron-router-dom@latest
+  ```
+
+  Remember, the minimum versions required for `Electron Router DOM v2` are:
+  - electron: **`>=17.0`**
+  - react: **`>=18.0`**
+  - react-router-dom: **`>=6.22.3`**
+
+  <Step>Creating the `electron-router-dom.ts` file</Step>
+
+  In the `src` folder of your project, create a `lib` folder and inside it the `electron-router-dom.ts` file.
+  It is through this new file that you will expose the `registerRoute` method and the `Router` component to your application.
+
+  <br/>
+
+  - The <Link href="/docs/api/main/register-route">registerRoute</Link> method will be used in the `main process` to register a window as a route of the application.
+  - The <Link href="/docs/api/renderer/router">Router</Link> component will be used in the `renderer process` to navigate between the windows/routes of the application.
+
+  <br/>
+
+  ```typescript title="src/lib/electron-router-dom.ts"
+    import { createElectronRouter } from 'electron-router-dom'
+
+    export const { Router, registerRoute } = createElectronRouter({
+      port: 4927, // the port of your React server is running on (optional, default port is 3000)
+
+      types: {
+        /**
+         * The ids of the windows of your application, think of these ids as the basenames of the routes
+         * this new way will allow your editor's intelisense to help you know which ids are available to use
+         * both in the main and renderer process
+         */
+        ids: ['main'],
+      },
+    })
+  ```
+
+  <Step>Updating the main process</Step>
+
+  ```diff title="src/renderer/routes.tsx"
+  - import { createFileRoute, createURLRoute } from 'electron-router-dom'
+  + import { registerRoute } from '../lib/electron-router-dom'
+  ```
+  With the removal of the `createFileRoute` and `createURLRoute` functions from the `electron-router-dom` package, the process has become simpler and more intuitive.
+  Now, you only need to import the `registerRoute` function from the `electron-router-dom.ts` file you created earlier.
+
+  What was done this way before:
+
+  ```ts title="src/main/index.ts"
+    const devServerURL = createURLRoute('http://localhost:3000', id)
+
+    const fileRoute = createFileRoute(
+      join(__dirname, '../renderer/index.html'),
+      id
+    )
+
+    process.env.NODE_ENV === 'development'
+      ? window.loadURL(devServerURL)
+      : window.loadFile(...fileRoute)
+  ```
+  Now, it will be done like this:
+
+  ```ts title="src/main/index.ts"
+    registerRoute({
+      id: 'main',
+      browserWindow: window,
+      htmlFile: path.join(__dirname, '../renderer/index.html'),
+    })
+  ```
+
+  You no longer need to worry about the logic of loading the development server URL or the application HTML file, `Electron Router DOM` will take care of it for you.
+
+  <Step>Updating imports in the rendering process</Step>
+
+  Now the `Route` component is no longer exported from the `electron-router-dom` package, but from the `react-router-dom` package.
+  In addition to simplifying the use of `Electron Router DOM`, this decision will help cause less confusion about what should be imported from each package.
+
+  ```diff title="src/renderer/routes.tsx"
+  + import { Route } from 'react-router-dom'
+
+  - import { Router, Route } from 'electron-router-dom'
+  + import { Router } from '../lib/electron-router-dom'
+  ```
+</Steps>
+
+<Alert variant="success">
+  <AlertTitle className="text-bold text-lg">
+    🎉 You are now ready to use `Electron Router DOM v2`
+  </AlertTitle>
+
+  <AlertDescription>
+    To get the most out of the library,
+    we recommend you to read the rest of the documentation or look at the existing <Link href="https://github.com/daltonmenezes/electron-router-dom/tree/main/examples">examples</Link>!
+  </AlertDescription>
+</Alert>

@@ -1,0 +1,18 @@
+---
+title: Resolução de problemas
+description: Resolução de problemas comuns com o Electron Router DOM
+links:
+  source: https://electron-vite.org/guide/troubleshooting#distribution
+---
+
+Se você está tendo problemas com o `Electron Router DOM`, aqui estão alguns problemas comuns e suas soluções.
+
+## Distribuição
+
+### A JavaScript error occurred in the main process -> Error: Cannot find module 'XXX'
+
+A seguinte solução é dos [documentos do Electron Vite](https://electron-vite.org/guide/troubleshooting), mas é a mesma para a maioria dos aplicativos Electron:
+
+Módulos dependentes não são empacotados no aplicativo. Para resolver isso:
+- Se o módulo relacionado estiver instalado em `devDependencies`, reinstale-o em `dependencies`. Isso ocorre porque as ferramentas de empacotamento (por exemplo, `electron-builder`, `electron-forge`) geralmente excluem módulos em `devDependencies`.
+- Se você estiver usando o `gerenciador de pacotes pnpm`, você precisará adicionar um arquivo `.npmrc` com `shamefully-hoist=true` no diretório raiz do projeto (para que suas dependências sejam empacotadas corretamente). Além disso, você precisa excluir `node_modules` e `pnpm-lock.yaml`, então reinstalar os módulos. Claro, você pode mudar para outro gerenciador de pacotes (por exemplo, `npm`, `yarn`) para evitar esse problema.

@@ -1,0 +1,46 @@
+---
+title: Context API
+description: How to use the Context API with Electron Router DOM
+links:
+  source: https://github.com/remix-run/react-router/blob/9afac15d8cbe30b37d0f9e8b89c9f1e430dfe35a/examples/auth/src/App.tsx#L43-L46
+---
+
+The Context API with `Electron Router DOM` is pretty simple to use, but there are some caveats you need to be aware of!
+
+The `Provider` must be used in the `element` prop, so you can't use it at the same level of a `Route`, because `React Router DOM` requires a` Route`, otherwise you will get the following error:
+
+ <Alert variant="destructive" className="my-4">
+  <AlertTitle>🚫 Error: [AppProvider] is not a `<Route>` component.</AlertTitle>
+
+  <AlertDescription>
+    All component children of `<Routes>` must be a `<Route>` or `<React.Fragment>`
+  </AlertDescription>
+</Alert>
+
+### Example of right usage
+
+```tsx {4, 6}
+<Route
+  path="/"
+  element={
+    <SomeProvider>
+      <SomePage />
+    </SomeProvider>
+  }
+/>
+```
+
+or you can just pass the `Router` as children of your `Provider`:
+
+```tsx {1, 10}
+<SomeProvider>
+  <Router
+    main={
+      <Route
+        path="/"
+        element={<SomePage />}
+      />
+    }
+  />
+</SomeProvider>
+```
