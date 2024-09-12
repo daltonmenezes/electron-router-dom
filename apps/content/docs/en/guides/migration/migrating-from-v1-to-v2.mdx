@@ -46,7 +46,7 @@ description: Learn how to migrate from Electron Router DOM v1 to v2
 
   <Step>Updating the main process</Step>
 
-  ```diff title="src/renderer/routes.tsx"
+  ```diff title="src/main/index.ts"
   - import { createFileRoute, createURLRoute } from 'electron-router-dom'
   + import { registerRoute } from '../lib/electron-router-dom'
   ```
