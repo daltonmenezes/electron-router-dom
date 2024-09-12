@@ -1,0 +1,99 @@
+---
+title: TypeScript
+description: Boosting the use of TypeScript with Electron Router DOM
+---
+
+## Typing URLSearchParams globally
+
+To get global typing of `URLSearchParams` in the `get` method of the `queryKeys` you specified, you can use the following approach using the `settings` object returned by the `createElectronRouter` function:
+
+```ts title="src/lib/electron-router-dom.ts"
+import { createElectronRouter, type Query } from 'electron-router-dom'
+
+export const { Router, registerRoute, settings } = createElectronRouter({
+  port: 4927,
+
+  types: {
+    ids: ['main'],
+    queryKeys: ['name', 'version'],
+  },
+})
+
+declare global {
+  interface URLSearchParams {
+    get<T extends typeof settings>(name: Query.Keys<T>): Query.Return
+  }
+}
+```
+
+Or you can type all methods:
+
+```ts title="src/lib/electron-router-dom.ts"
+import { createElectronRouter, type Query } from 'electron-router-dom'
+
+export const { Router, registerRoute, settings } = createElectronRouter({
+  port: 4927,
+
+  types: {
+    ids: ['main'],
+    queryKeys: ['name', 'version'],
+  },
+})
+
+declare global {
+  type Types = typeof settings
+
+  interface URLSearchParams {
+    get<T extends Types>(name: Query.Keys<T>): Query.Return
+    set<T extends Types>(name: Query.Keys<T>, value: string): void
+    append<T extends Types>(name: Query.Keys<T>, value: string): void
+    delete<T extends Types>(name: Query.Keys<T>, value?: string): void
+    has<T extends Types>(name: Query.Keys<T>, value?: string): boolean
+    forEach<T extends Types>(
+      callbackfn: (
+        value: string,
+        key: Query.Keys<T>,
+        parent: URLSearchParams
+      ) => void
+    ): void
+    getAll<T extends Types>(name: Query.Keys<T>): string[]
+    keys<T extends Types>(): IterableIterator<Query.Keys<T>>
+    entries<T extends Types>(): IterableIterator<[Query.Keys<T>, string]>
+  }
+}
+```
+
+With this, you will be able to take advantage of editor's intellisense in both the global `URLSearchParams` object and the `useSearchParams` hook of the `react-router-dom` library.
+
+## Typing a factory with router ids and queryKeys
+
+Assuming you have a factory to create windows in Electron, and you want to type it with the ids and queryKeys you specified in the `createElectronRouter` function,
+you can use the following approach using the `registerRoute` method returned by it:
+
+```ts
+import { registerRoute } from './lib/electron-router-dom'
+
+type Route = Parameters<typeof registerRoute>[0]
+
+interface WindowProps extends Electron.BrowserWindowConstructorOptions {
+  id: Route['id']
+  query?: Route['query']
+}
+
+export function createWindow({ id, query, ...options }: WindowProps) {
+  const window = new BrowserWindow(options)
+
+  registerRoute({
+    id,
+    query,
+    browserWindow: window,
+    htmlFile: path.join(__dirname, '../renderer/index.html'),
+  })
+
+  return window
+}
+```
+
+With this, when calling the `createWindow` function, you will have the `id` property and the `query` object properly typed.
+
+

@@ -1,0 +1,24 @@
+{
+  "extends": "@repo/typescript-config/electron.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "declaration": true,
+    "declarationDir": "./dist/esm",
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "./src/*"
+      ],
+    }
+  },
+  "include": [
+    "src",
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+}

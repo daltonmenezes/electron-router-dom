@@ -1,0 +1,221 @@
+---
+title: createElectronRouter
+description: Creates a router for your Electron application
+---
+
+The `createElectronRouter` function creates a router for your Electron application.
+From it, you will be able to connect the main process and renderer process, allowing integration between them.
+
+## Basic example
+
+```ts
+import { createElectronRouter } from 'electron-router-dom'
+
+export const { Router, registerRoute } = createElectronRouter({
+  port: 4927,
+
+  types: {
+    ids: ['main', 'about'],
+    queryKeys: ['id', 'name'],
+  },
+})
+```
+
+## API Reference
+
+ <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Property</TableHead>
+      <TableHead>Type</TableHead>
+      <TableHead>Default</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `port?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              The port where the `React` development server is running.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`number`</TableCell>
+      <TableCell>`3000`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <div className="inline-flex gap-2">
+          `types?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              The definitions of allowed types for routes.
+              These types are used to enforce the defined contract and make it easier for your code editor to suggest these types.
+
+              #### Example
+              ```ts
+              {
+                strict: true,
+                ids: ['main', 'about'],
+                queryKeys: ['id', 'name'],
+              }
+              ```
+
+              #### Types
+              ```ts
+              {
+                strict?: boolean
+                ids?: Array<string>
+                queryKeys?: Array<string>
+              }
+              ```
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`object`</TableCell>
+      <TableCell />
+    </TableRow>
+  </TableBody>
+</Table>
+
+### `types`
+
+ <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Property</TableHead>
+      <TableHead>Type</TableHead>
+      <TableHead>Default</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
+          `strict?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              If `true`, then you will need to use one of the ids defined in `types.ids` and one of the keys in `types.queryKeys` when using the `registerRoute` method and the `Route` component,
+              otherwise any `string`/`property` will be allowed.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`boolean`</TableCell>
+      <TableCell>`true`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <div className="inline-flex gap-2">
+          `ids?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              The ids that will represent your windows/routes, think of them as the `basename` of a route.
+
+              If `types.strict` set in the `createElectronRouter` function is `true` (default is `true`),
+              then you will need to use one of the defined ids, if you have explicitly set `types.strict` to `false`,
+              any string will be allowed.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`Array<string>`</TableCell>
+      <TableCell />
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <div className="inline-flex gap-2">
+          `queryKeys?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              The keys of the `query strings` that will be passed to the window and used by the global `window.URLSearchParams` object or by the `useSearchParams` hook from the `react-router-dom` package.
+
+              If `types.strict` set in the `createElectronRouter` function is `true` (default is `true`),
+              then you will need to use one of the defined query keys, if you have explicitly set `types.strict` to `false`,
+              any `string/property` will be allowed.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`Array<string>`</TableCell>
+      <TableCell />
+    </TableRow>
+  </TableBody>
+</Table>
+
+
+## Return
+
+ <Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Property</TableHead>
+      <TableHead>Type</TableHead>
+    </TableRow>
+  </TableHeader>
+
+  <TableBody>
+    <TableRow>
+      <TableCell>
+        <Link href="/docs/api/renderer/router">Router</Link>
+      </TableCell>
+
+      <TableCell>`React Component`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <Link href="/docs/api/main/register-route">registerRoute</Link>
+      </TableCell>
+
+      <TableCell>`function`</TableCell>
+    </TableRow>
+
+    <TableRow>
+      <TableCell className="min-w-[200px]">
+        <Link href="/docs/api/settings">settings</Link>
+      </TableCell>
+
+      <TableCell>`object`</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>

@@ -1,0 +1,87 @@
+---
+title: Introduzindo Electron Router DOM v2.0! 🎉
+date: 2024-09-11 23:12:00
+excerpt: Lançada a versão 2.0 do Electron Router DOM, saiba o que mudou!
+author_id: daltonmenezes
+tags: [electron-router-dom, react-router-dom, react, electron, react-router]
+---
+
+Dois anos após o lançamento da versão 1.0, estou feliz em anunciar o lançamento da versão principal 2.0 do `Electron Router DOM`! 🎉
+
+A versão foi reescrita, com o objetivo de melhorar a experiência do desenvolvedor, a manutenabilidade e a inferência de tipos.
+Nesse post, abordarei as principais mudanças e melhorias introduzidas na versão 2.0.
+
+<br/>
+
+## Site, blog, documentação e exemplos
+
+Agora temos um site que conta com esses recursos para te ajudar a extrair o máximo da biblioteca.
+
+Na versão 1.0 contávamos, apenas, com o README do repositório no GitHub e a implementação real no projeto [electron-app](https://github.com/daltonmenezes/electron-app) como exemplo.
+O que, para muitas pessoas, não era suficiente para entender como a biblioteca funcionava de maneira mais completa e intuitiva.
+
+## Melhorias na tipagem
+
+Agora você pode ter uma melhor experiência de desenvolvimento onde os `ids` e `query keys` são tipados.
+Com isso, o desenvolvimento se torna mais seguro e intuitivo, evitando erros de digitação,
+garantindo que você está passando os valores corretos e um melhor uso do intelisense do seu editor de código.
+
+## Reescrita do código
+
+O código da biblioteca foi reescrito, visando as melhorias introduzidas pelo `React Router v6.4`, como o suporte as `Data APIs`,
+possibilitando um uso mais sofisticado e produtivo tanto do `Electron Router DOM` quanto do `React Router`.
+
+## Query strings
+
+Agora você pode usar as `query strings` com mais facilidade e passar informações entre o processo principal e o renderizador.
+
+## Simplificação da API
+
+A API foi simplificada para facilitar o uso e a compreensão da biblioteca.
+As funções `createFileRoute` e `createURLRoute` foram removidas, agora você pode usar o método `registerRoute` retornado pela função `createElectronRouter` no lugar delas.
+
+O que antes era feito dessa forma:
+
+```ts title="src/main/index.ts"
+  const devServerURL = createURLRoute('http://localhost:3000', id)
+
+  const fileRoute = createFileRoute(
+    join(__dirname, '../renderer/index.html'),
+    id
+  )
+
+  process.env.NODE_ENV === 'development'
+    ? window.loadURL(devServerURL)
+    : window.loadFile(...fileRoute)
+```
+Agora, será feito dessa:
+
+```ts title="src/main/index.ts"
+  registerRoute({
+    id: 'main',
+    browserWindow: window,
+    htmlFile: path.join(__dirname, '../renderer/index.html'),
+  })
+```
+
+Você não precisa mais se preocupar com a lógica de carregar a URL do servidor de desenvolvimento ou o arquivo HTML da aplicação, o `Electron Router DOM` cuidará disso para você.
+
+Outra mudança é que o componente `Route` não é mais exportado do pacote `electron-router-dom`, mas sim do pacote `react-router-dom`, tornando mais claro e simples saber o que utilizar de cada biblioteca.
+
+## Conclusão
+
+Com essas melhorias, foi necessário mudar a forma como você cria o roteador. E foi necessário atualizar as versões mínimas requeridas das dependências para extrair ao máximo os novos recursos introduzidos na `versão 6.4 do React Router`, causando **breaking changes**!
+
+Eu sei, **breaking changes** sempre trazem desconforto e, acredite em mim, não foi uma decisão fácil, mas isso trará uma experiência e evolução maior para os seus projetos.
+
+Dito isso, não se preocupe, o processo de migração é muito simples e você pode conferir o guia de migração que preparei para obter mais detalhes:
+
+<br/>
+
+- [Migrando para a v2](/docs/guides/migration/migrating-from-v1-to-v2)
+
+Espero que você goste das mudanças e que elas tornem o desenvolvimento de aplicações Electron com React mais agradável e produtivo.
+
+Obrigado por usar o `Electron Router DOM`! 💛
+
+

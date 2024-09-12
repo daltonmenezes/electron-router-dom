@@ -1,0 +1,26 @@
+{
+  "extends": "@repo/typescript-config/electron.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "./src/*"
+      ],
+      "~/*": [
+        "./*"
+      ],
+    }
+  },
+  "include": [
+    "src",
+    "electron.vite.config.*",
+    "index.d.ts",
+    "tailwind.config.ts",
+    "postcss.config.mjs",
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+}

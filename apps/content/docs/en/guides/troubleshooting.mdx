@@ -1,0 +1,18 @@
+---
+title: Troubleshooting
+description: Troubleshooting common issues with Electron Router DOM
+links:
+  source: https://electron-vite.org/guide/troubleshooting#distribution
+---
+
+If you're having trouble with `Electron Router DOM`, here are some common issues and solutions.
+
+## Distribution
+
+### A JavaScript error occurred in the main process -> Error: Cannot find module 'XXX'
+
+The following solution is from [Electron Vite docs](https://electron-vite.org/guide/troubleshooting), but it's the same for most of the Electron apps:
+
+Dependent modules are not packaged into the application. To solve this:
+- If the related module is installed in `devDependencies`, please reinstall it in `dependencies`. This is because packaging tools (e.g. `electron-builder`, `electron-forge`) usually exclude modules in `devDependencies`.
+- If you are using the `pnpm package manager`, you’ll need to add a file `.npmrc` with `shamefully-hoist=true` in project root directory (in order for your dependencies to be bundled correctly). Also, you need to delete `node_modules` and `pnpm-lock.yaml`, then reinstall the modules. Of course you can switch to other package manager (e.g. `npm`, `yarn`) to avoid this problem.

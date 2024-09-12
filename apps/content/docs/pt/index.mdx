@@ -1,0 +1,122 @@
+---
+title: Introdução
+description: Uma rápida introdução ao Electron Router DOM
+---
+
+Se você já tentou usar a biblioteca `react-router-dom` com `Electron`,
+provavelmente enfrentou dificuldades para fazê-lo funcionar corretamente,
+tanto em ambiente de desenvolvimento quanto em produção.
+
+A partir disso, nasceu a biblioteca `Electron Router DOM`,
+que visa facilitar a integração do `react-router-dom` com o `Electron` e o roteamento por janelas,
+onde cada janela pode ter seu próprio roteamento.
+
+## Características
+
+- 🚀 Pronto para ambientes de produção e desenvolvimento
+- 📱 Suporte a roteamento por janelas
+- 🌐 Suporte a `query strings` enviados do processo principal para o renderizador
+- 🧬 API com tipagem segura e pensada para trazer uma boa DX
+
+## Instalação
+
+No seu terminal e na pasta raiz da sua aplicação, execute:
+
+```shell
+npm i electron-router-dom
+```
+
+## Criando o seu primeiro roteamento
+
+<Steps>
+  <Step>Crie o arquivo `electron-router-dom.ts`</Step>
+
+  Na pasta `src` do seu projeto, crie uma pasta `lib` e dentro dela o arquivo `electron-router-dom.ts` (ou `.js`).
+  É, através desse arquivo que você irá expor o método `registerRoute` e o componente `Router` para a sua aplicação.
+
+  <br/>
+
+  - O método <Link href="/docs/api/main/register-route">registerRoute</Link> será usada no `main process` para registrar uma janela como uma rota da aplicação.
+  - O componente <Link href="/docs/api/renderer/router">Router</Link> será usado no `renderer process` para navegar entre as janelas/rotas da aplicação.
+
+  <br/>
+
+  ```typescript title="src/lib/electron-router-dom.ts"
+    import { createElectronRouter } from 'electron-router-dom'
+
+    export const { Router, registerRoute } = createElectronRouter({
+      port: 4927, // a porta em que o seu servidor React está rodando (opcional, porta padrão é 3000)
+
+      types: {
+        /**
+         * Os ids das janelas da sua aplicação, pense nesses ids como os basenames das rotas
+         * essa nova forma permitirá que o intelisense do seu editor te ajude a saber quais ids estão disponíveis
+         * tanto no main quanto no renderer process
+         */
+        ids: ['main'],
+      },
+    })
+  ```
+
+  <Step>Atualize o processo principal</Step>
+
+  Importe o método `registerRoute` do arquivo `electron-router-dom.ts` que você criou anteriormente:
+
+  ```ts title="src/main/index.ts"
+    import { registerRoute } from '../lib/electron-router-dom'
+  ```
+
+  E na função em que você cria a janela da sua aplicação, após a criação, registre a rota passando a sua janela para o `registerRoute`:
+
+  ```ts title="src/main/index.ts"
+    registerRoute({
+      id: 'main',
+      browserWindow: window,
+      htmlFile: path.join(__dirname, '../renderer/index.html'),
+    })
+  ```
+
+  Note que você não precisa mais se preocupar com a lógica de carregar a URL do servidor de desenvolvimento ou o arquivo HTML da aplicação, o `Electron Router DOM` cuidará disso para você.
+
+  <Step>Atualize o processo de renderização</Step>
+
+  Importe o componente `Router` do arquivo `electron-router-dom.ts` que você criou anteriormente:
+
+  ```ts title="src/renderer/routes.tsx"
+    import { Router } from '../lib/electron-router-dom'
+  ```
+
+  E com isso você precisará passar suas rotas para o componente `Router`, veja um exemplo:
+
+  ```tsx title="src/renderer/routes.tsx"
+    import { Router } from 'electron-router-dom'
+    import { Route } from 'react-router-dom'
+
+    import { MainScreen, AboutScreen, SearchScreen } from './screens'
+
+    export function AppRoutes() {
+      return (
+        <Router
+          main={
+            <>
+              <Route path="/" element={<MainScreen />} />
+              <Route path="/search" element={<SearchScreen />} />
+            </>
+          }
+          about={<Route path="/" element={<AboutScreen />} />}
+        />
+      )
+    }
+  ```
+</Steps>
+
+<Alert variant="success">
+  <AlertTitle className="text-bold text-lg">
+    🎉 Agora você está pronto para usar o `Electron Router DOM`
+  </AlertTitle>
+
+  <AlertDescription>
+    Para extrair o potencial máximo da biblioteca,
+    recomendamos que você leia o restante da documentação ou veja os <Link href="https://github.com/daltonmenezes/electron-router-dom/tree/main/examples">exemplos</Link> existentes!
+  </AlertDescription>
+</Alert>

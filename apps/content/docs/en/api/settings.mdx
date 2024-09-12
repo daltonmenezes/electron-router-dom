@@ -1,0 +1,22 @@
+---
+title: settings
+description: The router settings.
+---
+
+The `settings` object returned by the <Link href="/docs/api/create-electron-router">createElectronRouter</Link> function has the same structure and values used in it.
+
+> You can use the `settings` object to reuse the settings in other parts of the application or as types using `typeof settings` in `TypeScript`.
+
+## Tipos
+
+```ts
+  {
+    port: number // default: 3000
+
+    types: {
+      strict: boolean // default: true
+      ids: string[]
+      queryKeys: string[]
+    }
+  }
+```
