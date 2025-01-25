@@ -102,7 +102,7 @@ export function createElectronRouter<
 
       /**
        * @description The path to dev server URL.
-       * Recommended for HRM or cases you need full control over the URL.
+       * Recommended for HMR (Hot Module Replacement) or cases you need full control over the URL.
        * If not provided, it will use the default URL: `http://localhost:${port}`
        * or the one defined in **createElectronRouter** settings.
        */
