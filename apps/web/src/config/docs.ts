@@ -127,6 +127,16 @@ export const docsConfig: DocsConfig = {
 
       items: [
         {
+          href: '/docs/guides/hmr',
+
+          title: {
+            en: 'HMR',
+          },
+
+          items: [],
+        },
+
+        {
           href: '/docs/guides/typescript',
 
           title: {
