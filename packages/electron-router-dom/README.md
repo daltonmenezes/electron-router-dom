@@ -77,4 +77,4 @@ That said, there's a bunch of ways you can contribute to this project, like by:
 
 # License
 
-[MIT © Dalton Menezes](https://github.com/daltonmenezes/electron-router-dom/blob/main/LICENSE)
+[MIT © Dalton Menezes](https://github.com/daltonmenezes/electron-router-dom/blob/main/LICENSE.md)
