@@ -15,6 +15,7 @@
     "apps/desktop/tailwind.config.ts": "apps/desktop/**",
     "apps/web/tailwind.config.ts": "apps/web/**",
     "examples/basic/tailwind.config.ts": "examples/basic/**",
+    "examples/hmr/tailwind.config.ts": "examples/hmr/**",
     "examples/with-loaders/tailwind.config.ts": "examples/with-loaders/**",
     "examples/with-query-string/tailwind.config.ts": "examples/with-query-string/**",
     "examples/with-multiple-windows/tailwind.config.ts": "examples/with-multiple-windows/**"

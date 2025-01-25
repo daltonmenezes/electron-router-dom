@@ -1,0 +1,43 @@
+---
+title: HMR
+description: Hot Module Replacement (HMR) com Electron Router DOM
+---
+
+## HMR utilizando Electron Vite
+
+```ts title="src/lib/electron-router-dom.ts"
+import { createElectronRouter } from 'electron-router-dom'
+
+export const { Router, registerRoute, settings } = createElectronRouter({
+  types: {
+    ids: ['main'],
+  },
+})
+```
+
+```ts title="src/main/index.ts" {18}
+import { app, BrowserWindow } from 'electron'
+import path from 'node:path'
+
+import { registerRoute } from 'lib/electron-router-dom'
+
+async function createMainWindow() {
+  const mainWindow = new BrowserWindow({
+    width: 650,
+    height: 300,
+    show: false,
+    resizable: false,
+    alwaysOnTop: true,
+  })
+
+  registerRoute({
+    id: 'main',
+    browserWindow: mainWindow,
+    devServerUrl: process.env['ELECTRON_RENDERER_URL'],
+    htmlFile: path.join(__dirname, '../renderer/index.html'),
+  })
+
+  // ...
+}
+```
+

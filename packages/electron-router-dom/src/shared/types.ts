@@ -11,6 +11,8 @@ export type LiteralUnion<
 
 type RawTypes = {
   port?: number
+  devServerUrl?: string
+
   types?: {
     ids?: string[]
     queryKeys?: string[]
@@ -31,10 +33,11 @@ export declare namespace Query {
 export type ElectronRouterOutput<
   T extends {
     port?: number
+    devServerUrl?: string
     types?: { ids?: string[]; queryKeys?: string[]; strict?: boolean }
   },
 > = Partial<
-  AllowedKeys<T, 'types' | 'port'> & {
+  AllowedKeys<T, 'types' | 'port' | 'devServerUrl'> & {
     types?: AllowedKeys<T['types'], 'ids' | 'queryKeys' | 'strict'>
   }
 >

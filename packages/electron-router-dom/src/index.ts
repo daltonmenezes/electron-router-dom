@@ -24,9 +24,16 @@ export function createElectronRouter<
   const T extends {
     /**
      * @description The port where the dev server is running.
+     * Only necessary if you are not using the devServerUrl property and you are not using the default port.
      * @default 3000
      */
     port?: number
+
+    /**
+     * @description The URL of the dev server is running.
+     * If not provided, it will use the default URL: `http://localhost:${port}`
+     */
+    devServerUrl?: string
 
     /**
      * @description The types definition for the router
@@ -50,7 +57,7 @@ export function createElectronRouter<
       queryKeys?: string[]
     }
   },
->({ types, port = defaults.port }: ElectronRouterOutput<T>) {
+>({ types, devServerUrl, port = defaults.port }: ElectronRouterOutput<T>) {
   type Types = NonNullable<T['types']>
   type IsStrictMode = Types['strict'] extends boolean ? Types['strict'] : true
 
@@ -94,6 +101,14 @@ export function createElectronRouter<
       port?: number
 
       /**
+       * @description The path to dev server URL.
+       * Recommended for HMR (Hot Module Replacement) or cases you need full control over the URL.
+       * If not provided, it will use the default URL: `http://localhost:${port}`
+       * or the one defined in **createElectronRouter** settings.
+       */
+      devServerUrl?: string
+
+      /**
        * @description The path to the HTML file related to the BrowserWindow
        */
       htmlFile: string
@@ -101,11 +116,15 @@ export function createElectronRouter<
       browserWindow: BrowserWindow
     },
   >(props: S) {
-    const devServerUrl = `http://localhost:${props.port ?? port}`
+    const serverUrl =
+      props.devServerUrl ||
+      devServerUrl ||
+      `http://localhost:${props.port ?? port}`
+
     const windowId = props.id || defaults.windowId
 
     if (isDev()) {
-      const URLRoute = createURLRoute(devServerUrl, windowId, {
+      const URLRoute = createURLRoute(serverUrl, windowId, {
         query: props.query as Record<string, string>,
       })
 
@@ -141,6 +160,7 @@ export function createElectronRouter<
 
   const settings = {
     port,
+    devServerUrl,
 
     types: {
       strict: types?.strict ?? true,
@@ -149,6 +169,7 @@ export function createElectronRouter<
     },
   } as {
     port: T['port'] extends number ? T['port'] : typeof defaults.port
+    devServerUrl: T['devServerUrl']
 
     types: {
       strict: Types['strict'] extends boolean ? Types['strict'] : true

@@ -1,10 +1,8 @@
-'use client'
-
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { createNoise3D } from 'simplex-noise'
 import { motion } from 'framer-motion'
 
-import { cn } from '@/lib/utils'
+import { cn } from 'renderer/utils'
 
 interface VortexProps {
   children?: any
@@ -241,18 +239,6 @@ export const Vortex = (props: VortexProps) => {
     })
     // eslint-disable-next-line
   }, []);
-
-  // if (typeof window === 'undefined') return <div />
-
-  /**
-   * Firefox has some issues with this component and becomes very laggy
-   * so we are disabling it for Firefox for now
-   * */
-  if (
-    typeof window !== 'undefined' &&
-    window.navigator.userAgent.includes('Firefox')
-  )
-    return <div />
 
   return (
     <div className={cn('relative h-full w-full', props.containerClassName)}>
