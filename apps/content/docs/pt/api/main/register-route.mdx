@@ -103,6 +103,33 @@ Isso significa que somente o conteúdo definido a partir da rota correspondente 
     <TableRow>
       <TableCell>
         <div className="inline-flex gap-2">
+          `devServerUrl?`
+
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon />
+            </PopoverTrigger>
+
+            <PopoverContent className="md:max-w-lg w-screen">
+              A URL do servidor de desenvolvimento `React`. Se não for definido, será usado o valor de `http://localhost:${port}`.
+
+              **Notas:**
+              - Se a URL foi definida na função `createElectronRouter`, então você não precisa definir essa propriedade,
+                caso defina, ela será usada em vez da URL definida na função `createElectronRouter`.
+              - Se você definir a `devServerUrl`, não será necessário utilizar a propriedade `port` separadamente.
+              - Essa propriedade pode ser útil quando você precisa de mais controle sobre a URL e em casos de utilização de `HMR (Hot Module Replacement)`.
+            </PopoverContent>
+          </Popover>
+        </div>
+      </TableCell>
+
+      <TableCell>`string`</TableCell>
+      <TableCell />
+    </TableRow>
+
+    <TableRow>
+      <TableCell>
+        <div className="inline-flex gap-2">
           `htmlFile`
 
           <Popover>
