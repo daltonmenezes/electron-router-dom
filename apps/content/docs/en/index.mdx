@@ -28,6 +28,14 @@ npm i electron-router-dom
 
 ## Creating your first routing
 
+ <Alert variant="destructive" className="my-4">
+  <AlertTitle>⚠️ Important!</AlertTitle>
+
+  <AlertDescription>
+    **Electron Router DOM** already manages the `loadURL` and `loadFile` methods of the `BrowserWindow` from **Electron**, to avoid issues, do not use them manually!
+  </AlertDescription>
+</Alert>
+
 <Steps>
   <Step>Create the `electron-router-dom.ts` file</Step>
 

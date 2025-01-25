@@ -28,6 +28,14 @@ npm i electron-router-dom
 
 ## Criando o seu primeiro roteamento
 
+ <Alert variant="destructive" className="my-4">
+  <AlertTitle>⚠️ Importante!</AlertTitle>
+
+  <AlertDescription>
+    **Electron Router DOM** já gerencia os métodos `loadURL` e `loadFile` da `BrowserWindow` do **Electron**, para evitar problemas, não os utilize manualmente!
+  </AlertDescription>
+</Alert>
+
 <Steps>
   <Step>Crie o arquivo `electron-router-dom.ts`</Step>
 
