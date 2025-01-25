@@ -1,0 +1,24 @@
+name: Lock Closed Issues
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions:
+  issues: write
+
+jobs:
+  action:
+    if: github.repository == 'daltonmenezes/electron-router-dom'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/lock-threads@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-inactive-days: '14'
+          # issue-comment: |
+          #  This issue has been locked since it has been closed for more than 14 days.
+          #
+          #  If you have found a concrete bug related to it, please open a new [bug report](https://github.com/daltonmenezes/electron-router-dom/issues/new/choose) with a reproduction against the latest Electron Router DOM version. If you have any other comments you should create a new [discussion](https://github.com/daltonmenezes/electron-router-dom/discussions).
+          issue-lock-reason: ''
+          process-only: issues
