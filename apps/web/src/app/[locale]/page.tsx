@@ -1,4 +1,4 @@
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
 import { Announcement } from '@/components/announcement'
@@ -27,7 +27,7 @@ export default async function IndexPage({
 }: {
   params: { locale: LocaleOptions }
 }) {
-  unstable_setRequestLocale(params.locale)
+  setRequestLocale(params.locale)
 
   const t = await getTranslations()
 

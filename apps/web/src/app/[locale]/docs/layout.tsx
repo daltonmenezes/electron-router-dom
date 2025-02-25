@@ -1,4 +1,4 @@
-import { unstable_setRequestLocale } from 'next-intl/server'
+import { setRequestLocale } from 'next-intl/server'
 
 import { getServerDocsConfig } from '@/lib/opendocs/utils/get-server-docs-config'
 import { DocsSidebarNav } from '@/components/docs/sidebar-nav'
@@ -19,7 +19,7 @@ export default async function DocsLayout({
   children,
   params,
 }: DocsLayoutProps) {
-  unstable_setRequestLocale(params.locale)
+  setRequestLocale(params.locale)
 
   const docsConfig = await getServerDocsConfig({ locale: params.locale })
 

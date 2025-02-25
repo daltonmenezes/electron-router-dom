@@ -1,4 +1,4 @@
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { allDocs } from 'contentlayer/generated'
 
 import type { LocaleOptions } from '@/lib/opendocs/types/i18n'
@@ -28,7 +28,7 @@ export async function generateMetadata({
 }: DocPageProps): Promise<Metadata> {
   const locale = params.locale
 
-  unstable_setRequestLocale(locale || defaultLocale)
+  setRequestLocale(locale || defaultLocale)
 
   const doc = await getDocFromParams({ params })
 
@@ -84,7 +84,7 @@ export async function generateStaticParams(): Promise<
 }
 
 export default async function DocPage({ params }: DocPageProps) {
-  unstable_setRequestLocale(params.locale || defaultLocale)
+  setRequestLocale(params.locale || defaultLocale)
 
   const doc = await getDocFromParams({ params })
   const t = await getTranslations('docs')

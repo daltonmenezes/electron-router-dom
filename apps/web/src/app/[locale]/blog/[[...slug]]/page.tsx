@@ -1,4 +1,4 @@
-import { unstable_setRequestLocale, getTranslations } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 
 import type { LocaleOptions } from '@/lib/opendocs/types/i18n'
@@ -36,7 +36,7 @@ export async function generateMetadata({
 }: BlogPageProps): Promise<Metadata> {
   const locale = params.locale || defaultLocale
 
-  unstable_setRequestLocale(locale)
+  setRequestLocale(locale)
 
   const [t, blogPost] = await Promise.all([
     getTranslations('site'),
@@ -153,7 +153,7 @@ export async function generateStaticParams(): Promise<
 export default async function BlogPage({ params }: BlogPageProps) {
   const locale = params.locale || defaultLocale
 
-  unstable_setRequestLocale(locale)
+  setRequestLocale(locale)
 
   const t = await getTranslations()
   const blogPost = await getBlogFromParams({ params })
