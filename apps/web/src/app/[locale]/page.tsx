@@ -1,9 +1,9 @@
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
+import dynamic from 'next/dynamic'
 
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
 import { Announcement } from '@/components/announcement'
 import { buttonVariants } from '@/components/ui/button'
-import { Vortex } from '@/components/ui/vortex'
 import { Icons } from '@/components/icons'
 import { siteConfig } from '@/config/site'
 import { Link } from '@/navigation'
@@ -22,12 +22,16 @@ import { InstallationBox } from '@/components/installation-box'
 
 export const dynamicParams = true
 
+const Vortex = dynamic(() => import('../../components/ui/vortex'), {
+  ssr: false,
+})
+
 export default async function IndexPage({
   params,
 }: {
   params: { locale: LocaleOptions }
 }) {
-  unstable_setRequestLocale(params.locale)
+  setRequestLocale(params.locale)
 
   const t = await getTranslations()
 

@@ -83,4 +83,3 @@ code[data-line-numbers] > [data-line]::before {
 [data-chars-id='i'] {
   @apply !text-purple-200 bg-purple-800/50 font-bold;
 }
-
