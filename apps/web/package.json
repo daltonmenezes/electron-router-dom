@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "run-s contentlayer:build next:build",
     "start": "next start",
+    "preview": "pnpm build && wrangler pages dev out",
     "lint": "next lint",
     "lint:fix": "eslint --fix .",
     "next:build": "next build",
@@ -81,6 +82,7 @@
     "tailwindcss": "^3.4.6",
     "typescript": "^5",
     "unist-builder": "^4.0.0",
-    "unist-util-visit": "^5.0.0"
+    "unist-util-visit": "^5.0.0",
+    "wrangler": "^4.62.0"
   }
 }
