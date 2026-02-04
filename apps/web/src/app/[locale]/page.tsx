@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import dynamic from 'next/dynamic'
+import { VortexWrapper } from '@/components/ui/vortex-wrapper'
 
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
 import { Announcement } from '@/components/announcement'
@@ -18,19 +18,19 @@ import {
 
 import type { LocaleOptions } from '@/lib/opendocs/types/i18n'
 
+import { locales } from '@/config/i18n'
 import { InstallationBox } from '@/components/installation-box'
 
-export const dynamicParams = true
+export const dynamicParams = false
 
-const Vortex = dynamic(() => import('../../components/ui/vortex'), {
-  ssr: false,
-})
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
 
-export default async function IndexPage({
-  params,
-}: {
-  params: { locale: LocaleOptions }
+export default async function IndexPage(props: {
+  params: Promise<{ locale: LocaleOptions }>
 }) {
+  const params = await props.params
   setRequestLocale(params.locale)
 
   const t = await getTranslations()
@@ -69,7 +69,7 @@ export default async function IndexPage({
         </PageActions>
 
         <div className="fixed left-0 -top-40 size-full -z-10 overflow-hidden">
-          <Vortex
+          <VortexWrapper
             backgroundColor="transparent"
             className="flex size-full"
             rangeY={300}

@@ -1,23 +1,26 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
 
 import {
   PaginationItem,
   PaginationLink,
-  PaginationNext,
   PaginationContent,
   PaginationPrevious,
+  PaginationNext,
   PaginationEllipsis,
   Pagination as RawPagination,
 } from '@/components/ui/pagination'
 
 import { cn } from '@/lib/utils'
+import { getBlogPath } from '@/lib/opendocs/utils/blog'
 
 interface PaginationProps {
   numberOfPages: number
   pagesToShow?: number
+  currentPage: number
+  currentTag?: string | null
+  locale: string
 
   messages: {
     next: string
@@ -30,16 +33,11 @@ interface PaginationProps {
 export function Pagination({
   messages,
   numberOfPages,
+  currentPage,
+  currentTag,
+  locale,
   pagesToShow = 5,
 }: PaginationProps) {
-  const searchParams = useSearchParams()
-
-  const currentPage = useMemo(() => {
-    const page = searchParams.get('page')
-
-    return page ? parseInt(page, 10) : 1
-  }, [searchParams])
-
   const hasPreviousPage = currentPage > 1
   const hasNextPage = currentPage < numberOfPages
 
@@ -65,7 +63,11 @@ export function Pagination({
       <PaginationContent className="flex flex-wrap items-end space-x-2 space-y-2 sm:space-x-3 sm:space-y-0">
         <PaginationItem>
           <PaginationPrevious
-            href={hasPreviousPage ? `?page=${currentPage - 1}` : '#'}
+            href={
+              hasPreviousPage
+                ? getBlogPath({ page: currentPage - 1, tag: currentTag, locale })
+                : '#'
+            }
             aria-label={messages.go_to_previous_page}
             className={cn({
               'opacity-50 pointer-events-none': !hasPreviousPage,
@@ -91,7 +93,11 @@ export function Pagination({
               {shouldDisplayEllipsis ? (
                 <PaginationEllipsis />
               ) : (
-                <PaginationLink href={`?page=${page}`}>{page}</PaginationLink>
+                <PaginationLink
+                  href={getBlogPath({ page, tag: currentTag, locale })}
+                >
+                  {page}
+                </PaginationLink>
               )}
             </PaginationItem>
           )
@@ -99,9 +105,15 @@ export function Pagination({
 
         <PaginationItem>
           <PaginationNext
-            href={hasNextPage ? `?page=${currentPage + 1}` : '#'}
+            href={
+              hasNextPage
+                ? getBlogPath({ page: currentPage + 1, tag: currentTag, locale })
+                : '#'
+            }
             aria-label={messages.go_to_next_page}
-            className={cn({ 'opacity-50 pointer-events-none': !hasNextPage })}
+            className={cn({
+              'opacity-50 pointer-events-none': !hasNextPage,
+            })}
           >
             {messages.next}
           </PaginationNext>

@@ -2,7 +2,7 @@
   "extends": "@repo/typescript-config/electron.json",
   "compilerOptions": {
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
       "*": [

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { type ComponentType, useMemo } from 'react'
 
 import {
   RouterProvider,
@@ -24,7 +24,7 @@ export type RouterProps<T extends RouteDef> =
 export function Router<T extends RouteDef>({
   _providerProps,
   ...routes
-}: RouterProps<T>) {
+}: RouterProps<T>): JSX.Element {
   const selectAllSlashes = /\//g
 
   const rawId =
@@ -43,7 +43,13 @@ export function Router<T extends RouteDef>({
     [windowID]
   )
 
+  const RouterProviderComponent =
+    RouterProvider as ComponentType<RouterProviderProps>
+
   return (
-    <RouterProvider {...(_providerProps && _providerProps)} router={router} />
+    <RouterProviderComponent
+      {...(_providerProps && _providerProps)}
+      router={router}
+    />
   )
 }

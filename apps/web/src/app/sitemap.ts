@@ -4,6 +4,8 @@ import { allBlogs, allDocs } from 'contentlayer/generated'
 import { absoluteUrl } from '@/lib/utils'
 import { locales } from '@/config/i18n'
 
+export const dynamic = 'force-static'
+
 type Sitemap = MetadataRoute.Sitemap
 
 export default function sitemap(): Sitemap {

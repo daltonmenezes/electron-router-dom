@@ -9,27 +9,33 @@ import { getObjectValueByLocale } from '@/lib/opendocs/utils/locale'
 import { ThemeProvider } from '@/components/theme-provider'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
-import { defaultLocale } from '@/config/i18n'
+import { locales, defaultLocale } from '@/config/i18n'
 import { siteConfig } from '@/config/site'
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
+
 import { fontSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 import { NextIntlClientProvider } from 'next-intl'
 
 interface AppLayoutProps {
   children: React.ReactNode
-  params: {
-    locale: LocaleOptions
-  }
+  params: Promise<{
+    locale: string
+  }>
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: LocaleOptions }
+export async function generateMetadata(props: {
+  params: Promise<{ locale: LocaleOptions }>
 }): Promise<Metadata> {
+  const params = await props.params
   setRequestLocale(params.locale || defaultLocale)
 
   return {
+    metadataBase: new URL(siteConfig.url || 'http://localhost:8788'),
+
     title: {
       default: siteConfig.name,
       template: `%s - ${siteConfig.name}`,
@@ -100,11 +106,11 @@ export async function generateMetadata({
       shortcut: '/favicon-16x16.png',
     },
 
-    manifest: `${siteConfig.url}/site.webmanifest`,
+    manifest: `/manifest.webmanifest`,
   }
 }
 
-export const dynamicParams = true
+export const dynamicParams = false
 
 export const viewport: Viewport = {
   themeColor: [
@@ -113,11 +119,12 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({ children, params }: AppLayoutProps) {
-  setRequestLocale(params.locale)
+export default async function RootLayout({ children, params }: AppLayoutProps) {
+  const { locale } = await params
+  setRequestLocale(locale)
 
   return (
-    <html lang={params.locale || defaultLocale} suppressHydrationWarning>
+    <html lang={locale || defaultLocale} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#181423" />
       </head>
@@ -129,7 +136,7 @@ export default function RootLayout({ children, params }: AppLayoutProps) {
         )}
       >
         <NextIntlClientProvider
-          locale={params.locale || defaultLocale}
+          locale={locale || defaultLocale}
           messages={{}}
         >
           <ThemeProvider
@@ -139,10 +146,10 @@ export default function RootLayout({ children, params }: AppLayoutProps) {
             disableTransitionOnChange
           >
             <div>
-              <div className="relative z-10 flex min-h-screen flex-col">
+              <div className="relative flex min-h-screen flex-col">
                 <SiteHeader />
 
-                <main className="flex-1">{children}</main>
+                <main className="relative flex-1 w-full">{children}</main>
 
                 <SiteFooter />
               </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 
 import {
   Sheet,
@@ -21,7 +22,7 @@ import { usePathname } from '@/navigation'
 import { Button } from './ui/button'
 
 interface MobileNavProps {
-  menuLinks: JSX.Element
+  menuLinks: ReactNode
 
   messages: {
     menu: string

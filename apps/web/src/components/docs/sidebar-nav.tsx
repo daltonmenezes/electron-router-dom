@@ -10,7 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from '@/components/ui/accordion'
+} from './details-accordion'
 
 import { getObjectValueByLocale } from '@/lib/opendocs/utils/locale'
 import { usePathname, Link as DesktopLink } from '@/navigation'
@@ -95,6 +95,8 @@ export function DocsSidebarNavItems({
             (childItem) => childItem.href === pathname
           )
 
+          const titleText = getObjectValueByLocale(item.title, locale)
+
           return (
             item.items.length > 0 && (
               <Accordion
@@ -102,25 +104,21 @@ export function DocsSidebarNavItems({
                 className="py-2"
                 collapsible
                 onValueChange={() =>
-                  toggleAccordionState(
-                    getObjectValueByLocale(item.title, locale)
-                  )
+                  toggleAccordionState(titleText)
                 }
                 defaultValue={
                   activeChild?.title ||
-                  accordionsStates.get(
-                    getObjectValueByLocale(item.title, locale)
-                  )
-                    ? getObjectValueByLocale(item.title, locale)
+                  accordionsStates.get(titleText)
+                    ? titleText
                     : ''
                 }
               >
                 <AccordionItem
-                  value={getObjectValueByLocale(item.title, locale)}
+                  value={titleText}
                 >
                   <AccordionTrigger className="py-0 pb-3">
                     <h4 className="flex items-center gap-2 rounded-md pl-4 text-sm font-semibold">
-                      {getObjectValueByLocale(item.title, locale)}
+                      {titleText}
 
                       {item.label && (
                         <span className="h-fit rounded-md bg-primary-active px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <script>
+    var locale = 'en';
+    try {
+      var storedLocale = localStorage.getItem('user-locale');
+      if (storedLocale && (storedLocale === 'en' || storedLocale === 'pt')) {
+        locale = storedLocale;
+      } else {
+        var userLang = navigator.language || navigator.userLanguage;
+        if (userLang && userLang.startsWith('pt')) {
+          locale = 'pt';
+        }
+      }
+    } catch (e) {}
+    window.location.href = '/' + locale;
+  </script>
+  <meta http-equiv="refresh" content="0;url=/en">
+</head>
+<body>
+</body>
+</html>
