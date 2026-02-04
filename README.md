@@ -59,8 +59,8 @@ npm i react-router-dom
 ```
 
 # Links
-- [Documentation](https://electron-router-dom.daltonmenezes.com/docs)
-- [Blog](https://electron-router-dom.daltonmenezes.com/blog)
+- [Documentation](https://electron-router-dom.daltonmenezes.com/en/docs)
+- [Blog](https://electron-router-dom.daltonmenezes.com/en/blog)
 - [Examples](https://github.com/daltonmenezes/electron-router-dom/tree/main/examples)
 
 
