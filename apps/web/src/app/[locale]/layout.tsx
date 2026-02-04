@@ -34,7 +34,7 @@ export async function generateMetadata(props: {
   setRequestLocale(params.locale || defaultLocale)
 
   return {
-    metadataBase: new URL(siteConfig.url || 'http://localhost:3000'),
+    metadataBase: new URL(siteConfig.url || 'http://localhost:8788'),
 
     title: {
       default: siteConfig.name,
