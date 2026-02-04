@@ -3,7 +3,6 @@
 import { useMemo, useEffect, useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 
-import { useMounted } from '@/lib/opendocs/hooks/use-mounted'
 import { TableOfContents } from '@/lib/opendocs/utils/toc'
 import { Separator } from '@/components/ui/separator'
 import { siteConfig } from '@/config/site'
@@ -41,10 +40,9 @@ export function DashboardTableOfContents({
     [toc]
   )
 
-  const mounted = useMounted()
   const activeHeading = useActiveItem(itemIds as string[])
 
-  if (!toc?.items || !mounted) {
+  if (!toc?.items) {
     return (
       <div className="space-y-2">
         <DefaultTableOfContentItems
