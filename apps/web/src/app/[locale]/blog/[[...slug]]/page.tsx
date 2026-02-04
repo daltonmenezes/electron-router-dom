@@ -1,5 +1,6 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server'
-import { Suspense } from 'react'
+import { notFound } from 'next/navigation'
+import { compareDesc } from 'date-fns'
 
 import type { LocaleOptions } from '@/lib/opendocs/types/i18n'
 import type { Metadata } from 'next'
@@ -16,31 +17,57 @@ import { BlogPostTags } from '@/components/blog/post-tags'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { AuthorCard } from '@/components/blog/author'
 import { allBlogs } from 'contentlayer/generated'
-import { defaultLocale } from '@/config/i18n'
+import { defaultLocale, locales } from '@/config/i18n'
 import { Mdx } from '@/components/docs/mdx'
 import { siteConfig } from '@/config/site'
-import { Icons } from '@/components/icons'
 import { absoluteUrl } from '@/lib/utils'
 
-interface BlogPageProps {
-  params: {
-    slug: string[]
-    locale: LocaleOptions
-  }
+interface BlogParams {
+  slug: string[]
+  locale: string
 }
 
-export const dynamicParams = true
+interface BlogPageProps {
+  params: Promise<BlogParams>
+}
 
-export async function generateMetadata({
-  params,
-}: BlogPageProps): Promise<Metadata> {
-  const locale = params.locale || defaultLocale
+export const dynamicParams = false
+
+const POSTS_PER_PAGE = 6
+
+function getParamsFromSlug(slug: string[] = []) {
+  if (slug.length === 0) {
+    return { page: 1, tag: null, isPost: false }
+  }
+
+  if (slug.length === 2 && slug[0] === 'page') {
+    const page = parseInt(slug[1]!)
+    return { page: isNaN(page) ? 1 : page, tag: null, isPost: false }
+  }
+
+  if (slug.length >= 2 && slug[0] === 'tags') {
+    const tag = decodeURI(slug[1]!)
+    if (slug.length === 2) {
+      return { page: 1, tag, isPost: false }
+    }
+    if (slug.length === 4 && slug[2] === 'page') {
+      const page = parseInt(slug[3]!)
+      return { page: isNaN(page) ? 1 : page, tag, isPost: false }
+    }
+  }
+
+  return { page: 1, tag: null, isPost: true }
+}
+
+export async function generateMetadata(props: BlogPageProps): Promise<Metadata> {
+  const params = await props.params
+  const locale = (params.locale || defaultLocale) as LocaleOptions
 
   setRequestLocale(locale)
 
   const [t, blogPost] = await Promise.all([
     getTranslations('site'),
-    getBlogFromParams({ params }),
+    getBlogFromParams({ params: { ...params, locale } }),
   ])
 
   if (!blogPost) {
@@ -135,107 +162,195 @@ export async function generateMetadata({
   }
 }
 
-export async function generateStaticParams(): Promise<
-  BlogPageProps['params'][]
-> {
-  const blog = allBlogs.map((blog) => {
-    const [locale, ...slugs] = blog.slugAsParams.split('/')
+export async function generateStaticParams(): Promise<BlogParams[]> {
+  const posts = allBlogs
+  const tags = new Set(posts.map((p) => p.tags).flat().filter(Boolean))
 
-    return {
-      slug: slugs,
-      locale: locale as LocaleOptions,
-    }
+  // 1. Post pages
+  const postParams = posts.map((blog) => {
+    const [locale, ...slugs] = blog.slugAsParams.split('/')
+    return { slug: slugs, locale: locale as LocaleOptions }
   })
 
-  return blog
+  // 2. Index pagination pages
+  const indexParams: BlogParams[] = []
+  
+  for (const locale of locales) {
+    // Filter posts for this locale to calculate correct pagination
+    const localePosts = posts.filter(p => {
+       const [l] = p.slugAsParams.split('/')
+       return l === locale
+    })
+    
+    const totalPages = Math.ceil(localePosts.length / POSTS_PER_PAGE) || 1
+
+    // Page 1 is []
+    indexParams.push({ slug: [], locale: locale as LocaleOptions })
+    
+    // Pages 2..N
+    for (let i = 2; i <= totalPages; i++) {
+      indexParams.push({ slug: ['page', i.toString()], locale: locale as LocaleOptions })
+    }
+  }
+
+  // 3. Tag pages and their pagination
+  const tagParams: BlogParams[] = []
+  
+  for (const tag of Array.from(tags)) {
+    if (!tag) continue;
+    
+    for (const locale of locales) {
+      // Filter posts for this locale AND tag
+      const localeTagPosts = posts.filter(p => {
+         const [l] = p.slugAsParams.split('/')
+         return l === locale && p.tags?.includes(tag)
+      })
+      
+      if (localeTagPosts.length === 0) {
+         // Even if tag exists globally, if no posts in this locale have it, we might skip or include empty?
+         // Better to include it if we want to show empty state, or skip.
+         // Let's assume we want to show it (maybe with 0 posts).
+         // But usually we skip.
+         // Let's only generate if there are posts or at least 1 page.
+      }
+
+      const totalTagPages = Math.ceil(localeTagPosts.length / POSTS_PER_PAGE) || 1
+
+      // Tag Page 1
+      tagParams.push({ slug: ['tags', tag], locale: locale as LocaleOptions })
+      
+      // Tag Pages 2..N
+      for (let i = 2; i <= totalTagPages; i++) {
+        tagParams.push({ slug: ['tags', tag, 'page', i.toString()], locale: locale as LocaleOptions })
+      }
+    }
+  }
+
+  return [...postParams, ...indexParams, ...tagParams]
 }
 
-export default async function BlogPage({ params }: BlogPageProps) {
-  const locale = params.locale || defaultLocale
+export default async function BlogPage(props: BlogPageProps) {
+  const params = await props.params
+  const locale = (params.locale || defaultLocale) as LocaleOptions
 
   setRequestLocale(locale)
 
-  const t = await getTranslations()
-  const blogPost = await getBlogFromParams({ params })
+  const { slug } = params
+  const { page, tag, isPost } = getParamsFromSlug(slug)
 
-  if (!blogPost) {
+  if (isPost) {
+    const t = await getTranslations()
+    const blogPost = await getBlogFromParams({ params: { ...params, locale } })
+
+    if (!blogPost) {
+      return notFound()
+    }
+
+    const toc = await getTableOfContents(blogPost.body.raw)
+
     return (
-      <Suspense
-        fallback={
-          <div className="h-64 md:h-96 w-full flex flex-1 items-center justify-center">
-            <Icons.spinner
-              className="animate-spin max-h-32 max-w-32 min-h-20 min-w-20 h-full w-full"
-              strokeWidth="1"
-            />
+      <div className="container relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px] pb-12">
+        <div className="mx-auto w-full min-w-0">
+          <BlogPostBreadcrumb
+            post={blogPost}
+            messages={{
+              posts: t('site.words.blog'),
+            }}
+          />
+
+          <BlogPostHeading
+            post={{ ...blogPost, notAvailable: false }}
+            locale={locale}
+            messages={{
+              by: t('blog.words.by'),
+              min_read: t('blog.cards.min_read'),
+            }}
+          />
+
+          <div className="mt-8 flex flex-wrap gap-2 lg:mt-0">
+            <BlogPostTags post={blogPost} />
           </div>
-        }
-      >
-        <PaginatedBlogPosts
-          posts={allBlogs}
-          locale={locale}
-          perPage={6}
-          messages={{
-            by: t('blog.words.by'),
-            next: t('blog.buttons.next'),
-            min_read: t('blog.cards.min_read'),
-            previous: t('blog.buttons.previous'),
-            rss_feed: t('blog.buttons.rss_feed'),
-            read_more: t('blog.buttons.read_more'),
-            go_to_next_page: t('blog.buttons.go_to_next_page'),
-            go_to_previous_page: t('blog.buttons.go_to_previous_page'),
-          }}
-        />
-      </Suspense>
-    )
-  }
 
-  const toc = await getTableOfContents(blogPost.body.raw)
-
-  return (
-    <main className="relative space-y-12 lg:gap-10 lg:grid lg:grid-cols-[1fr_250px]">
-      <div className="mx-auto min-w-0 max-w-4xl">
-        <BlogPostBreadcrumb
-          post={blogPost}
-          messages={{
-            posts: t('blog.words.posts'),
-          }}
-        />
-
-        <BlogPostHeading
-          post={blogPost}
-          locale={locale}
-          messages={{
-            by: t('blog.words.by'),
-            min_read: t('blog.cards.min_read'),
-          }}
-        />
-
-        <BlogPostTags post={blogPost} />
-
-        <div className="pb-12 pt-8">
-          <Mdx code={blogPost.body.code} />
-        </div>
-
-        <AuthorCard post={blogPost} />
-      </div>
-
-      <div className="hidden text-sm lg:block">
-        <div className="sticky top-16 -mt-10 pt-4">
-          <ScrollArea className="pb-10">
-            <div className="sticky top-16 -mt-10 h-fit py-12">
+          <div className="mt-8">
+            <ScrollArea className="h-full max-h-[500px] w-full pb-8 lg:hidden">
               <DashboardTableOfContents
-                sourceFilePath={blogPost._raw.sourceFilePath}
                 toc={toc}
+                sourceFilePath={blogPost._raw.sourceFilePath}
                 messages={{
                   onThisPage: t('docs.on_this_page'),
                   editPageOnGitHub: t('docs.edit_page_on_github'),
                   startDiscussionOnGitHub: t('docs.start_discussion_on_github'),
                 }}
               />
+            </ScrollArea>
+
+            <Mdx code={blogPost.body.code} />
+
+            <div className="mt-8 flex flex-col justify-between lg:flex-row lg:items-center">
+              <AuthorCard post={blogPost} />
             </div>
-          </ScrollArea>
+          </div>
+        </div>
+
+        <div className="hidden text-sm xl:block">
+          <div className="sticky top-20 h-[calc(100vh-3.5rem)] overflow-hidden pt-4">
+            <ScrollArea className="h-full pb-10">
+              <DashboardTableOfContents
+                toc={toc}
+                sourceFilePath={blogPost._raw.sourceFilePath}
+                messages={{
+                  onThisPage: t('docs.on_this_page'),
+                  editPageOnGitHub: t('docs.edit_page_on_github'),
+                  startDiscussionOnGitHub: t('docs.start_discussion_on_github'),
+                }}
+              />
+            </ScrollArea>
+          </div>
         </div>
       </div>
-    </main>
-  )
-}
+    )
+  }
+
+  // List View
+  const t = await getTranslations()
+  
+  let posts = allBlogs
+    .filter((post) => {
+      const [postLocale] = post.slugAsParams.split('/')
+      return postLocale === locale
+    })
+    .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
+
+  if (tag) {
+    posts = posts.filter((post) => post.tags?.includes(tag))
+  }
+  
+  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE) || 1
+  
+  // Validate page number
+  if (page > totalPages && posts.length > 0) {
+     return notFound()
+  }
+  
+  const paginatedPosts = posts.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE)
+
+          return (
+            <PaginatedBlogPosts
+              posts={paginatedPosts}
+              locale={locale}
+              totalPages={totalPages}
+              currentPage={page}
+              currentTag={tag}
+              messages={{
+                by: t('blog.words.by'),
+                next: t('blog.buttons.next'),
+                min_read: t('blog.cards.min_read'),
+                previous: t('blog.buttons.previous'),
+                rss_feed: t('blog.buttons.rss_feed'),
+                read_more: t('blog.buttons.read_more'),
+                go_to_next_page: t('blog.buttons.go_to_next_page'),
+                go_to_previous_page: t('blog.buttons.go_to_previous_page'),
+              }}
+            />
+          )
+        }

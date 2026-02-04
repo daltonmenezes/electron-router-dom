@@ -1,13 +1,13 @@
 import { type Doc, allDocs } from 'contentlayer/generated'
 
 import type { NavItem, SidebarNavItem } from '../types/nav'
-import type { DocPageProps } from '../types/docs'
+import type { DocPageProps, DocParams } from '../types/docs'
 
 import { getSlugWithoutLocale } from './locale'
 import { defaultLocale } from '@/config/i18n'
 import { docsConfig } from '@/config/docs'
 
-export function makeLocalizedSlug({ locale, slug }: DocPageProps['params']) {
+export function makeLocalizedSlug({ locale, slug }: DocParams) {
   const _slug = slug?.join('/')
   const _locale = locale || defaultLocale
 
@@ -18,7 +18,7 @@ export function makeLocalizedSlug({ locale, slug }: DocPageProps['params']) {
 
 export async function getDocFromParams({
   params,
-}: DocPageProps): Promise<(Doc & { notAvailable: boolean }) | null> {
+}: { params: DocParams }): Promise<(Doc & { notAvailable: boolean }) | null> {
   let localizedSlug = makeLocalizedSlug(params)
   let doc = allDocs.find((doc) => doc.slugAsParams === localizedSlug)
 

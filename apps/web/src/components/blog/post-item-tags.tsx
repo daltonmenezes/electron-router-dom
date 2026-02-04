@@ -1,6 +1,5 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
 
 import type { Blog } from 'contentlayer/generated'
@@ -8,16 +7,17 @@ import type { Blog } from 'contentlayer/generated'
 import { PaginationEllipsis } from '../ui/pagination'
 import { Link } from '@/navigation'
 import { Badge } from '../ui/badge'
+import { getBlogPath } from '@/lib/opendocs/utils/blog'
 
 export function BlogPostItemTags({
   post,
+  currentTag,
   limitOfTagsToDisplay = 5,
 }: {
   post: Blog
+  currentTag?: string | null
   limitOfTagsToDisplay?: number
 }) {
-  const searchParams = useSearchParams()
-
   const totalOfTags = post?.tags?.length || 0
   const shouldDisplayEllipsis = totalOfTags > limitOfTagsToDisplay
 
@@ -42,12 +42,11 @@ export function BlogPostItemTags({
   return (
     <div className="w-fit flex flex-wrap items-center gap-2 pt-4">
       {tags.map((tag) => {
-        const currentTag = searchParams.get('tag') || ''
         const isCurrentTagActive = tag === currentTag
 
         const href = isCurrentTagActive
           ? '/blog'
-          : `/blog?tag=${encodeURI(tag)}`
+          : `/blog/tags/${tag}`
 
         return (
           <Link key={tag} href={href}>

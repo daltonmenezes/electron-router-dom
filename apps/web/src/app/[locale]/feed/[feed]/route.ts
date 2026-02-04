@@ -107,10 +107,15 @@ export const generateStaticParams = async (): Promise<
     .flat()
 }
 
-export const GET = async (_: Request, { params }: StaticParams) => {
+export const GET = async (
+  _: Request,
+  props: { params: Promise<{ feed: string; locale: string }> }
+) => {
+  const params = await props.params
+
   const websiteFeed = provideWebsiteFeeds({
     feed: params.feed,
-    locale: params.locale || defaultLocale,
+    locale: (params.locale as LocaleOptions) || defaultLocale,
   })
 
   const feed = blogConfig.rss.find((rss) => rss.file === params.feed)
@@ -127,12 +132,4 @@ export const GET = async (_: Request, { params }: StaticParams) => {
   })
 }
 
-export const dynamicParams = true
 export const dynamic = 'force-static'
-
-const VERCEL_REVALIDATE = Number(
-  // eslint-disable-next-line turbo/no-undeclared-env-vars
-  process.env.NEXT_PUBLIC_VERCEL_REVALIDATE_TIME || 300
-)
-
-export const revalidate = VERCEL_REVALIDATE

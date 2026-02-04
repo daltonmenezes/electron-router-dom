@@ -30,9 +30,11 @@ export interface BlogConfig {
   rss: RSSFeed[]
 }
 
+export interface BlogParams {
+  slug: string[]
+  locale: string
+}
+
 export interface BlogPageProps {
-  params: {
-    slug: string[]
-    locale: LocaleOptions
-  }
+  params: Promise<BlogParams>
 }

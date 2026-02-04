@@ -11,18 +11,18 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "prettier": "^3.3.3",
-    "turbo": "^2.4.2",
-    "typescript": "^5.4.5",
-    "husky": "^9.1.4",
     "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2"
+    "@commitlint/config-conventional": "^19.2.2",
+    "husky": "^9.1.4",
+    "prettier": "^3.3.3",
+    "turbo": "^2.8.1",
+    "typescript": "^5.4.5"
   },
   "packageManager": "pnpm@9.6.0",
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "next": "14.2.5"
+    "next": "16.1.6"
   }
 }

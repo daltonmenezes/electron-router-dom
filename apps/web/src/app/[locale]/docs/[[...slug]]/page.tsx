@@ -12,20 +12,19 @@ import { getTableOfContents } from '@/lib/opendocs/utils/toc'
 import { DocBreadcrumb } from '@/components/docs/breadcrumb'
 import { getDocFromParams } from '@/lib/opendocs/utils/doc'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { DocPageProps } from '@/lib/opendocs/types/docs'
+import { DocPageProps, DocParams } from '@/lib/opendocs/types/docs'
 import { DocHeading } from '@/components/docs/heading'
 import { DocsPager } from '@/components/docs/pager'
 import { DocLinks } from '@/components/docs/links'
-import { defaultLocale } from '@/config/i18n'
+import { defaultLocale, locales } from '@/config/i18n'
 import { Mdx } from '@/components/docs/mdx'
 import { siteConfig } from '@/config/site'
 import { absoluteUrl } from '@/lib/utils'
 
-export const dynamicParams = true
+export const dynamicParams = false
 
-export async function generateMetadata({
-  params,
-}: DocPageProps): Promise<Metadata> {
+export async function generateMetadata(props: DocPageProps): Promise<Metadata> {
+  const params = await props.params
   const locale = params.locale
 
   setRequestLocale(locale || defaultLocale)
@@ -68,9 +67,7 @@ export async function generateMetadata({
   }
 }
 
-export async function generateStaticParams(): Promise<
-  DocPageProps['params'][]
-> {
+export async function generateStaticParams(): Promise<DocParams[]> {
   const docs = allDocs.map((doc) => {
     const [locale, ...slugs] = doc.slugAsParams.split('/')
 
@@ -80,13 +77,20 @@ export async function generateStaticParams(): Promise<
     }
   })
 
-  return docs
+  const indexParams = locales.map((locale) => ({
+    slug: [],
+    locale: locale as LocaleOptions,
+  }))
+
+  return [...docs, ...indexParams]
 }
 
-export default async function DocPage({ params }: DocPageProps) {
-  setRequestLocale(params.locale || defaultLocale)
+export default async function DocPage(props: DocPageProps) {
+  const params = await props.params
+  const locale = (params.locale || defaultLocale) as LocaleOptions
+  setRequestLocale(locale)
 
-  const doc = await getDocFromParams({ params })
+  const doc = await getDocFromParams({ params: { ...params, locale } })
   const t = await getTranslations('docs')
 
   if (!doc) {
@@ -103,7 +107,7 @@ export default async function DocPage({ params }: DocPageProps) {
   const toc = await getTableOfContents(doc.body.raw)
 
   return (
-    <main className="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+    <main className="relative py-6 lg:gap-10 lg:py-8 lg:grid lg:grid-cols-[1fr_250px]">
       <div className="mx-auto w-full min-w-0">
         <DocBreadcrumb
           doc={doc}
@@ -112,35 +116,32 @@ export default async function DocPage({ params }: DocPageProps) {
           }}
         />
 
-        <DocHeading doc={doc} locale={params.locale} />
-        <DocLinks doc={doc} />
+        <DocHeading
+          doc={doc}
+          locale={locale}
+        />
 
-        <div className="pb-12 pt-8">
-          <Mdx code={doc.body.code} />
+        <Mdx code={doc.body.code} />
+
+        <div className="flex flex-col gap-6 lg:gap-8 pb-4 mt-16">
+          <DocLinks doc={doc} />
+          <DocsPager doc={doc} locale={locale} />
         </div>
-
-        <DocsPager doc={doc} locale={params.locale} />
       </div>
 
-      {doc.toc && (
-        <div className="hidden text-sm xl:block">
-          <div className="sticky top-16 -mt-10 pt-4">
-            <ScrollArea className="pb-10">
-              <div className="sticky top-16 -mt-10 h-fit py-12">
-                <DashboardTableOfContents
-                  toc={toc}
-                  sourceFilePath={doc._raw.sourceFilePath}
-                  messages={{
-                    onThisPage: t('on_this_page'),
-                    editPageOnGitHub: t('edit_page_on_github'),
-                    startDiscussionOnGitHub: t('start_discussion_on_github'),
-                  }}
-                />
-              </div>
-            </ScrollArea>
-          </div>
+      <div className="hidden text-sm lg:block">
+        <div className="sticky top-16 -mt-10 max-h-[calc(var(--vh)-4rem)] overflow-y-auto pt-10">
+          <DashboardTableOfContents
+            toc={toc}
+            sourceFilePath={doc._raw.sourceFilePath}
+            messages={{
+              onThisPage: t('on_this_page'),
+              editPageOnGitHub: t('edit_page_on_github'),
+              startDiscussionOnGitHub: t('start_discussion_on_github'),
+            }}
+          />
         </div>
-      )}
+      </div>
     </main>
   )
 }

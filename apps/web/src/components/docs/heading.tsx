@@ -12,7 +12,7 @@ interface DocHeadingProps {
 
 export function DocHeading({ doc, locale }: DocHeadingProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 mb-10">
       <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
         {doc.title}
       </h1>

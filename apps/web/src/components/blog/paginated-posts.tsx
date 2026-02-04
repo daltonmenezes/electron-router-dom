@@ -1,17 +1,7 @@
-'use client'
-
-import { useSearchParams } from 'next/navigation'
 import Balancer from 'react-wrap-balancer'
-import { compareDesc } from 'date-fns'
-import { useMemo } from 'react'
 
 import type { LocaleOptions } from '@/lib/opendocs/types/i18n'
 import type { Blog } from 'contentlayer/generated'
-
-import {
-  getSlugWithoutLocale,
-  getObjectValueByLocale,
-} from '@/lib/opendocs/utils/locale'
 
 import { cn, formatDate, truncateText } from '@/lib/utils'
 import { BlogPostItemTags } from './post-item-tags'
@@ -25,8 +15,10 @@ import { Card } from '../ui/card'
 
 interface PaginatedBlogPostsProps {
   posts: Blog[]
-  perPage?: number
   locale: LocaleOptions
+  totalPages: number
+  currentPage: number
+  currentTag?: string | null
 
   messages: {
     by: string
@@ -44,51 +36,10 @@ export function PaginatedBlogPosts({
   posts,
   locale,
   messages,
-  perPage = 10,
+  totalPages,
+  currentPage,
+  currentTag,
 }: PaginatedBlogPostsProps) {
-  const searchParams = useSearchParams()
-  const tag = searchParams.get('tag')
-
-  const currentPage = useMemo(() => {
-    const page = searchParams.get('page')
-
-    return page ? parseInt(page, 10) : 1
-  }, [searchParams])
-
-  const blogPosts = useMemo(() => {
-    let blogPosts = posts
-
-    if (tag) {
-      blogPosts = blogPosts.filter((post) =>
-        post.tags?.includes(decodeURI(tag))
-      )
-    }
-
-    return blogPosts
-  }, [posts, tag])
-
-  const sortedPosts = useMemo(
-    () =>
-      blogPosts
-        .filter((post) => {
-          const [localeFromSlug] = post.slugAsParams.split('/')
-
-          return localeFromSlug === locale
-        })
-        .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date))),
-    [blogPosts, locale]
-  )
-
-  const totalOfPages = useMemo(
-    () => Math.ceil(sortedPosts.length / perPage),
-    [sortedPosts.length, perPage]
-  )
-
-  const paginatedPosts = useMemo(
-    () => sortedPosts.slice((currentPage - 1) * perPage, currentPage * perPage),
-    [sortedPosts, currentPage, perPage]
-  )
-
   return (
     <main className="relative max-w-5xl mx-auto space-y-6 grid">
       <RSSToggle
@@ -99,12 +50,16 @@ export function PaginatedBlogPosts({
 
       <div
         className={cn('grid gap-4 grid-cols-1', {
-          'md:grid-cols-2': paginatedPosts.length >= 2,
-          'md:grid-cols-1': paginatedPosts.length < 2,
+          'md:grid-cols-2': posts.length >= 2,
+          'md:grid-cols-1': posts.length < 2,
         })}
       >
-        {paginatedPosts.map((post) => {
-          const postLink = getSlugWithoutLocale(post.slug, 'blog')
+        {posts.map((post) => {
+          const [_, ...slugList] = post.slugAsParams.split('/')
+          const slug = slugList.join('/')
+
+          const title = post.title
+          const excerpt = post.excerpt
 
           return (
             <Card
@@ -114,10 +69,7 @@ export function PaginatedBlogPosts({
               <div>
                 <div className="flex items-center mb-2 text-xs text-muted-foreground justify-between gap-1">
                   <time dateTime={post.date}>
-                    {formatDate(
-                      post.date,
-                      getObjectValueByLocale(dateLocales, locale)
-                    )}
+                    {formatDate(post.date, dateLocales[locale])}
                   </time>
 
                   <ReadTime
@@ -130,23 +82,26 @@ export function PaginatedBlogPosts({
                 </div>
 
                 <Link
-                  href={postLink}
+                  href={`/blog/${slug}`}
                   className={cn('hover:opacity-65 transition-all')}
                 >
                   <h1 className="text-xl py-2">
-                    <Balancer>{post.title}</Balancer>
+                    <Balancer>{title}</Balancer>
                   </h1>
                 </Link>
 
                 <p className="text-muted-foreground">
-                  <Balancer>{truncateText(post.excerpt, 148)}</Balancer>
+                  <Balancer>{truncateText(excerpt, 148)}</Balancer>
                 </p>
               </div>
 
-              <BlogPostItemTags post={post} />
+              <BlogPostItemTags
+                post={post}
+                currentTag={currentTag}
+              />
 
               <Link
-                href={postLink}
+                href={`/blog/${slug}`}
                 className={cn(
                   'dark:hover:text-primary dark:text-primary-active transition-all',
                   buttonVariants({ variant: 'link' }),
@@ -160,11 +115,20 @@ export function PaginatedBlogPosts({
         })}
       </div>
 
-      <Pagination
-        pagesToShow={10}
-        messages={messages}
-        numberOfPages={totalOfPages}
-      />
+      {totalPages > 1 && (
+        <Pagination
+          locale={locale}
+          currentPage={currentPage}
+          numberOfPages={totalPages}
+          currentTag={currentTag}
+          messages={{
+            next: messages.next,
+            previous: messages.previous,
+            go_to_next_page: messages.go_to_next_page,
+            go_to_previous_page: messages.go_to_previous_page,
+          }}
+        />
+      )}
     </main>
   )
 }

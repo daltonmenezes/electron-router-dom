@@ -12,7 +12,7 @@ export const siteConfig = {
     pt: pt.site.description,
   },
 
-  url: process.env.NEXT_PUBLIC_APP_URL,
+  url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
 
   og: {
     image: absoluteUrl('/og.jpg'),
