@@ -12,6 +12,8 @@ import {
   Router as RendererRouter,
 } from './renderer'
 
+export type { RouteDef, RouterProps }
+
 import { createFileRoute } from './main/create-file'
 import { createURLRoute } from './main/create-url'
 import { isDev } from './shared/utils/is-dev'
@@ -154,7 +156,7 @@ export function createElectronRouter<
           : Record<string, JSX.Element>
       >
     >
-  ) {
+  ): JSX.Element {
     return RendererRouter(props as RouteDef)
   }
 

@@ -9,7 +9,7 @@ const config = {
     ...sharedConfig.theme,
 
     extend: {
-      ...sharedConfig.theme.extend,
+      ...sharedConfig.theme?.extend,
 
       fontFamily: {
         geist: ['Geist', 'sans-serif'],
