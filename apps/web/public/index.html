@@ -6,9 +6,14 @@
   <script>
     var locale = 'en';
     try {
-      var userLang = navigator.language || navigator.userLanguage;
-      if (userLang && userLang.startsWith('pt')) {
-        locale = 'pt';
+      var storedLocale = localStorage.getItem('user-locale');
+      if (storedLocale && (storedLocale === 'en' || storedLocale === 'pt')) {
+        locale = storedLocale;
+      } else {
+        var userLang = navigator.language || navigator.userLanguage;
+        if (userLang && userLang.startsWith('pt')) {
+          locale = 'pt';
+        }
       }
     } catch (e) {}
     window.location.href = '/' + locale;

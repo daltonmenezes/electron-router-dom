@@ -47,6 +47,8 @@ export function I18nToggle({ messages }: I18nToggleProps) {
   }
 
   function changeLocale(locale: LocaleOptions) {
+    localStorage.setItem('user-locale', locale)
+
     router.replace(pathname, {
       locale,
     })
