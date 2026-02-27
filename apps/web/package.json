@@ -6,6 +6,7 @@
     "dev": "next dev -p 8788",
     "build": "run-s contentlayer:build next:build",
     "start": "next start -p 8788",
+    "deploy": "wrangler pages deploy out",
     "preview": "pnpm build && wrangler pages dev out --port 8788",
     "lint": "next lint",
     "lint:fix": "eslint --fix .",
