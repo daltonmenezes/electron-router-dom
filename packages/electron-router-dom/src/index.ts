@@ -10,9 +10,11 @@ import {
   type RouteDef,
   type RouterProps,
   Router as RendererRouter,
+  getWindowId,
 } from './renderer'
 
 export type { RouteDef, RouterProps }
+export { getWindowId }
 
 import { createFileRoute } from './main/create-file'
 import { createURLRoute } from './main/create-url'

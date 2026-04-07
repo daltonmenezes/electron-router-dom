@@ -3,7 +3,7 @@ import { type ComponentType, useMemo } from 'react'
 import {
   RouterProvider,
   createHashRouter,
-  createRoutesFromChildren,
+  createRoutesFromElements,
   type RouterProviderProps,
 } from 'react-router-dom'
 
@@ -18,6 +18,19 @@ export type RouterProps<T extends RouteDef> =
     }
 
 /**
+ * Helper to grep windowId from {@link location.hash}.
+ * @process renderer
+ */
+export function getWindowId(): string {
+  const selectAllSlashes = /\//g;
+
+  const rawId =
+    location.hash.split(selectAllSlashes)?.[1]?.toLowerCase() || "main";
+
+  return rawId.split("?")[0] || "main";
+}
+
+/**
  * Renders a router component based on the provided routes.
  * @process renderer
  */
@@ -25,21 +38,18 @@ export function Router<T extends RouteDef>({
   _providerProps,
   ...routes
 }: RouterProps<T>): JSX.Element {
-  const selectAllSlashes = /\//g
-
-  const rawId =
-    location.hash.split(selectAllSlashes)?.[1]?.toLowerCase() || 'main'
-
-  const windowID = rawId.split('?')[0] || 'main'
-  const transformedRoutes: RouteDef = toLowerCaseKeys(routes)
-
-  const Route = () => transformedRoutes[windowID]
-
+  const windowID = getWindowId()
   const router = useMemo(
-    () =>
-      createHashRouter(createRoutesFromChildren(Route()), {
+    () => {
+      const transformedRoutes: RouteDef = toLowerCaseKeys(routes)
+      const newRoutes = createRoutesFromElements(
+        transformedRoutes[windowID]
+      )
+
+      return createHashRouter(newRoutes, {
         basename: `/${windowID}`,
-      }),
+      })
+    },
     [windowID]
   )
 
